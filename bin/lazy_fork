@@ -1,9 +1,63 @@
 #!/usr/bin/env ruby
 
 require 'lazy_fork'
+require 'optparse'
+require 'octokit'
+require 'io/console'
+require 'fileutils'
 
-lazy_forker = LazyFork::Parser.new
+HOME = File.expand_path("~")
+
+FileUtils.mkdir_p "#{HOME}/.lazy_forker"
 
 puts "You lazy forker..."
 
-lazy_forker.parse
+options = {}
+OptionParser.new do |opt|
+  opt.on('--repo user/repo', '-r user/repo', 'GitHub user/repo to be forked & cloned') { |o| options[:repo] = o }
+end.parse!
+
+if options[:repo].nil?
+  puts "repo must be specified!"
+  abort
+end
+
+if File.exists?("#{HOME}/.lazy_forker/oauth")
+  puts "OAuth key found..."
+  token = File.open("#{HOME}/.lazy_forker/oauth", "r").read
+  client = Octokit::Client.new access_token: token
+else
+  puts "Basic Authentication"
+  print "username: "
+  user = gets.chomp
+  print "password: "
+  pass = STDIN.noecho(&:gets).chomp
+  puts ""
+  client = Octokit::Client.new \
+    login: user,
+    password: pass
+  puts "Creating OAuth Token..."
+  token = client.create_authorization(:scopes => ["user","repo"], :note => "Lazy Forker Access Token")
+  File.open("#{HOME}/.lazy_forker/oauth",'w') do |s|
+    s.puts token[:token]
+  end
+  puts "Token created!"
+end
+
+begin
+  repo = Octokit::Repository.new(options[:repo])
+rescue  Octokit::InvalidRepository
+  puts "Invalid Repository: use owner/name format!"
+  abort
+end
+
+unless Octokit.repository?(repo)
+  puts "Repo #{repo.to_s} could not be found."
+  abort
+end
+
+puts "Repo #{repo.to_s} found."
+
+client.fork(repo)
+
+`git clone #{repo.url}`

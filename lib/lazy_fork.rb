@@ -1,10 +1,9 @@
 require "lazy_fork/version"
 
-module LazyFork
+require "optparse"
 
-  class Parser
-    def parse
-      puts "Hello"
-    end
+module LazyFork
+  def lazy_fork
   end
+  module_function :lazy_fork
 end
