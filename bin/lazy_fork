@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+
+require 'lazy_fork'
+
+lazy_forker = LazyFork::Parser.new
+
+puts "You lazy forker..."
+
+lazy_forker.parse

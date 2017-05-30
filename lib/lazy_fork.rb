@@ -1,5 +1,10 @@
 require "lazy_fork/version"
 
 module LazyFork
-  # Your code goes here...
+
+  class Parser
+    def parse
+      puts "Hello"
+    end
+  end
 end
