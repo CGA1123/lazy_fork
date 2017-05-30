@@ -58,6 +58,10 @@ end
 
 puts "Repo #{repo.to_s} found."
 
-client.fork(repo)
+fork_repo = client.fork(repo)
 
-`git clone #{repo.url}`
+puts "Forked #{repo.to_s} to #{fork_repo[:full_name]}"
+
+puts "Cloning Fork..."
+
+`git clone #{fork_repo[:html_url]}`
