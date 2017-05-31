@@ -1,11 +1,5 @@
 #!/usr/bin/env ruby
 
 require 'lazy_fork'
-require 'optparse'
-require 'octokit'
 
-options = {}
-op = OptionParser.new
-op.parse!
-
-LazyFork::LazyForker.new(options).be_lazy
+LazyFork::LazyForker.new(nil).fork
