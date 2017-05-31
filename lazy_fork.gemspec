@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
     f.match(%r{^(test|spec|features)/})
   end
 
-  spec.executables   = ["lazy_fork"]
+  spec.executables   = ["git-fork"]
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.14"

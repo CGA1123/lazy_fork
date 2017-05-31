@@ -10,11 +10,11 @@ Fork and clone your fork all without leaving the comfort of your terminal. :reli
 
 ## Usage
 
-    $ lazy_fork <owner>/<repo>
+    $ git fork <owner>/<repo>
 
 For example, if you wanted to fork this repo:
 
-    $ lazy_fork CGA1123/lazy_fork
+    $ git fork CGA1123/lazy_fork
 
 ## Development
 
