@@ -10,7 +10,7 @@ module LazyFork
       # tell the user they're being a lazy fork
       puts "You lazy forker..."
 
-      unless Dir.exist? LAZY_FORK_HOME
+      unless Dir.exist?(LAZY_FORK_HOME)
         puts "Creating #{LAZY_FORK_HOME}..."
         Dir.mkdir LAZY_FORK_HOME
       end
@@ -19,7 +19,16 @@ module LazyFork
     end
 
     def fork
-      clone_repo(fork_repo(get_repo(ARGV.first)))
+      clone_repo(fork_repo(get_repo(ARGV.first)), ARGV.last)
+    end
+
+    def fork?(repo)
+      @client.repository(repo)[:fork]
+    end
+
+    def source(repo)
+      source_slug = @client.repository(repo)[:source][:full_name]
+      Octokit::Repository.new(source_slug)
     end
 
     private
@@ -30,9 +39,8 @@ module LazyFork
       Octokit::Repository.new(fork_repo[:full_name])
     end
 
-    def clone_repo(repo)
-      puts "Cloning fork (#{repo.to_s})..."
-      `git clone #{repo.url} #{ARGV[1]}`
+    def clone_repo(repo, dest=".")
+      `git clone #{repo.url} #{dest}`
     end
 
     def get_repo(repo)
