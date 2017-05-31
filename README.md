@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/lazy_fork.svg)](https://badge.fury.io/rb/lazy_fork)
 # LazyFork - a command line utility for all the lazy forkers out there
 
 Who really wants to go through a web interface to fork a repo, just to head back to the command line to clone it?
