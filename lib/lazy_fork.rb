@@ -33,10 +33,9 @@ module LazyFork
 
     private
 
+    # Fork repo and return Octokit::Repository of newly forked repo
     def fork_repo(repo)
-      puts "Forking..."
-      fork_repo = @client.fork(repo)
-      Octokit::Repository.new(fork_repo[:full_name])
+      Octokit::Repository.new(@client.fork(repo)[:full_name])
     end
 
     def clone_repo(repo, dest=".")
