@@ -2,4 +2,4 @@
 
 require 'lazy_fork'
 
-LazyFork::LazyForker.new(nil).fork
+LazyFork::LazyForker.fork(ARGV.first, ARGV.last)

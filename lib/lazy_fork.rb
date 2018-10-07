@@ -4,58 +4,53 @@ require "octokit"
 
 module LazyFork
   class LazyForker
-    def initialize(options)
-      @options = options
+    def self.fork(source, destination)
+      new.fork(source, destination)
+    end
 
+    attr_reader :source, :destination, :client
+
+    def initialize(source, destination)
       # tell the user they're being a lazy fork
       puts "You lazy forker..."
 
-      unless Dir.exist?(LAZY_FORK_HOME)
-        puts "Creating #{LAZY_FORK_HOME}..."
-        Dir.mkdir LAZY_FORK_HOME
-      end
+      create_lazy_fork_home
 
-      authenticate_client
+      @source = source
+      @destination = destination
+      @client = authenticate_client
     end
 
     def fork
-      clone_repo(fork_repo(get_repo(ARGV.first)), ARGV.last)
-    end
-
-    def fork?(repo)
-      @client.repository(repo)[:fork]
-    end
-
-    def source(repo)
-      source_slug = @client.repository(repo)[:source][:full_name]
-      Octokit::Repository.new(source_slug)
+      repo = fork_repo
+      clone(repo)
     end
 
     private
 
     # Fork repo and return Octokit::Repository of newly forked repo
-    def fork_repo(repo)
-      Octokit::Repository.new(@client.fork(repo)[:full_name])
+    def fork_repo
+      Octokit::Repository.new(client.fork(get_repo)[:full_name])
     end
 
-    def clone_repo(repo, dest=".")
-      `git clone #{repo.url} #{dest}`
+    def clone(repo)
+      `git clone #{repo.url} #{destination}`
+      `cd #{destination}`
+      `git remote add upstream #{repo.url}`
     end
 
-    def get_repo(repo)
-      begin
-        repo = Octokit::Repository.new(repo)
-      rescue  Octokit::InvalidRepository
-        puts "Invalid Repository: use owner/name format!"
-        abort
-      end
+    def get_repo
+      repo = Octokit::Repository.new(source)
 
-      unless @client.repository?(repo)
+      unless client.repository?(repo)
         puts "Repo #{repo.to_s} could not be found."
         abort
       end
 
       repo
+    rescue  Octokit::InvalidRepository
+      puts "Invalid Repository: use owner/name format!"
+      abort
     end
 
     def authenticate_client
@@ -89,7 +84,14 @@ module LazyFork
         puts "Token created in #{LAZY_FORK_HOME}/oauth"
       end
 
-      @client = client
+      client
+    end
+
+    def create_lazy_fork_home
+      unless Dir.exist?(LAZY_FORK_HOME)
+        puts "Creating #{LAZY_FORK_HOME}..."
+        Dir.mkdir LAZY_FORK_HOME
+      end
     end
   end
 end
